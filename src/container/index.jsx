@@ -75,8 +75,12 @@ export default function Index() {
             saveData(name, sector, res._id);
 
             // Config loading state and popup message
-            setLoading(false);
-            toast.success(res.message);
+            // Time out is to show loading effect 
+            setTimeout(() => {
+               setLoading(false);
+               toast.success(res.message);
+            }, [1000]);
+
          } catch (error) {
             console.log(error);
          }

@@ -3,6 +3,7 @@ import { MoonLoader, PulseLoader } from "react-spinners";
 import { toast, ToastContainer } from "react-toastify";
 import { get } from "../utils/get";
 import { post } from "../utils/post";
+import { getData, saveData } from "../utils/saveData";
 
 export default function Index() {
    const [name, setName] = useState("");
@@ -16,6 +17,14 @@ export default function Index() {
 
    useEffect(() => {
       getOptions();
+
+      // gets previous data stored in the local storage and
+      // assign it to name and sector state
+      const prevData = getData();
+      if (prevData) {
+         setName(prevData.name);
+         setSector(prevData.sector);
+      }
    }, []);
 
    const getOptions = async () => {
@@ -27,6 +36,7 @@ export default function Index() {
          console.log(error);
       }
    };
+
    const validateForm = () => {
       // This function takes the forms states and checks if their empty
       // if they're empty, it the set an error state.
@@ -56,16 +66,23 @@ export default function Index() {
       if (isValid) {
          try {
             setLoading(true);
+
+            // posting data to backend
             const data = { sector, name };
             const res = await post("/post/data", data);
+
+            // Store data in local storage local storage
+            saveData(name, sector, res._id);
+
+            // Config loading state and popup message
             setLoading(false);
-            console.log(res);
             toast.success(res.message);
          } catch (error) {
             console.log(error);
          }
       }
    };
+
    return (
       <div className=" h-[100vh] flex items-center justify-center">
          <div className="col-lg-4 col-md-8 leading-9">
